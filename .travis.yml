@@ -1,0 +1,28 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t myimage -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true myimage npm run test
+
+after_success:
+  - docker build -t saishnaik/complex-client ./client
+  - docker build -t saishnaik/complex-server ./server
+  - docker build -t saishnaik/complex-worker ./worker
+  - docker build -t saishnaik/complex-nginx ./nginx
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-east-1"
+  app: "Elasticbeanstalk-docker-1"
+  env: "Elasticbeanstalk-docker-1-env"
+  bucket_name: "elasticbeanstalk-us-east-1-977965241368"
+  bucket_path: "docker-react"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
