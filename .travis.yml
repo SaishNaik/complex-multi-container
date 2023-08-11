@@ -14,15 +14,10 @@ after_success:
   - docker build -t saishnaik/complex-server ./server
   - docker build -t saishnaik/complex-worker ./worker
   - docker build -t saishnaik/complex-nginx ./nginx
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push saishnaik/complex-client
+  - docker push saishnaik/complex-server
+  - docker push saishnaik/complex-worker
+  - docker push saishnaik/complex-nginx
 
-deploy:
-  provider: elasticbeanstalk
-  region: "us-east-1"
-  app: "Elasticbeanstalk-docker-1"
-  env: "Elasticbeanstalk-docker-1-env"
-  bucket_name: "elasticbeanstalk-us-east-1-977965241368"
-  bucket_path: "docker-react"
-  on:
-    branch: master
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
+
